@@ -1,8 +1,8 @@
 <?php
 
-namespace Dacastro4\LaravelGmail\Traits;
+namespace Swandoola\LaravelGmail\Traits;
 
-use Dacastro4\LaravelGmail\Services\Message;
+use Swandoola\LaravelGmail\Services\Message;
 
 trait Filterable
 {

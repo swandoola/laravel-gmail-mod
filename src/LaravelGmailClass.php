@@ -1,9 +1,9 @@
 <?php
 
-namespace Dacastro4\LaravelGmail;
+namespace Swandoola\LaravelGmail;
 
-use Dacastro4\LaravelGmail\Exceptions\AuthException;
-use Dacastro4\LaravelGmail\Services\Message;
+use Swandoola\LaravelGmail\Exceptions\AuthException;
+use Swandoola\LaravelGmail\Services\Message;
 use Illuminate\Support\Facades\Redirect;
 
 class LaravelGmailClass extends GmailConnection

@@ -38,7 +38,7 @@ Now open up `config/app.php` and add the service provider to your providers arra
 
 ``` php
 'providers' => [
-    Dacastro4\LaravelGmail\LaravelGmailServiceProvider::class,
+    Swandoola\LaravelGmail\LaravelGmailServiceProvider::class,
 ]
 ```
 
@@ -46,7 +46,7 @@ Now add the alias.
 
 ``` php
 'aliases' => [
-    'LaravelGmail' => Dacastro4\LaravelGmail\Facade\LaravelGmail::class,
+    'LaravelGmail' => Swandoola\LaravelGmail\Facade\LaravelGmail::class,
 ]
 ```
 
@@ -106,7 +106,7 @@ GOOGLE_ALLOW_JSON_ENCRYPT
 
 To modify the scopes and the credentials file name, just run:
 
-Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
+Run `php artisan vendor:publish --provider="Swandoola\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
 
 ### Allow multi user credentials
 To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable 
@@ -207,7 +207,7 @@ and after that you don't have to call it again.
 ## Sending
 
 ```
-use Dacastro4\LaravelGmail\Services\Message\Mail;
+use Swandoola\LaravelGmail\Services\Message\Mail;
 
 ...
 
@@ -306,7 +306,7 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 ## Attachment
 
 ```
-use Dacastro4\LaravelGmail\Services\Message\Attachment
+use Swandoola\LaravelGmail\Services\Message\Attachment
 ...
 
 $attachment = new Attachment;

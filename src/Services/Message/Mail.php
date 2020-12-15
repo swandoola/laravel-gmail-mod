@@ -1,13 +1,13 @@
 <?php
 
-namespace Dacastro4\LaravelGmail\Services\Message;
+namespace Swandoola\LaravelGmail\Services\Message;
 
 use Carbon\Carbon;
-use Dacastro4\LaravelGmail\GmailConnection;
-use Dacastro4\LaravelGmail\Traits\HasDecodableBody;
-use Dacastro4\LaravelGmail\Traits\HasParts;
-use Dacastro4\LaravelGmail\Traits\Modifiable;
-use Dacastro4\LaravelGmail\Traits\Replyable;
+use Swandoola\LaravelGmail\GmailConnection;
+use Swandoola\LaravelGmail\Traits\HasDecodableBody;
+use Swandoola\LaravelGmail\Traits\HasParts;
+use Swandoola\LaravelGmail\Traits\Modifiable;
+use Swandoola\LaravelGmail\Traits\Replyable;
 use Google_Service_Gmail;
 use Google_Service_Gmail_MessagePart;
 use Illuminate\Support\Collection;
@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 /**
  * Class SingleMessage
  *
- * @package Dacastro4\LaravelGmail\services
+ * @package Swandoola\LaravelGmail\services
  */
 class Mail extends GmailConnection
 {

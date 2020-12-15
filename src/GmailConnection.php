@@ -1,8 +1,9 @@
 <?php
 
-namespace Dacastro4\LaravelGmail;
+namespace Swandoola\LaravelGmail;
 
-use Dacastro4\LaravelGmail\Traits\Configurable;
+use App\Models\MailConfig;
+use Swandoola\LaravelGmail\Traits\Configurable;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Container\Container;
