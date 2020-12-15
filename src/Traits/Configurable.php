@@ -25,7 +25,7 @@ trait Configurable
     {
         $credentials = $this->getClientGmailCredentials();
 
-        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $allowJsonEncrypt = $this->_config['allow_json_encrypt'];
 
         if ($credentials) {
             if ($allowJsonEncrypt) {
@@ -53,7 +53,7 @@ trait Configurable
 
         $mailConfig = \App\Models\MailConfig::where('practitioner_id', $userId)->where('type', 'google')->first();
 
-        $allowMultipleCredentials = $this->_config['gmail.allow_multiple_credentials'];
+        $allowMultipleCredentials = $this->_config['allow_multiple_credentials'];
 
         if ($mailConfig && $allowMultipleCredentials) {
 
@@ -68,9 +68,9 @@ trait Configurable
 	public function getConfigs()
 	{
 		return [
-			'client_secret' => $this->_config['gmail.client_secret'],
-			'client_id' => $this->_config['gmail.client_id'],
-			'redirect_uri' => url($this->_config['gmail.redirect_url']),
+			'client_secret' => $this->_config['client_secret'],
+			'client_id' => $this->_config['client_id'],
+			'redirect_uri' => url($this->_config['redirect_url']),
 			'state' => isset($this->_config['state']) ? $this->_config['state'] : null,
 		];
 	}
@@ -82,12 +82,16 @@ trait Configurable
 		return $this;
 	}
 
-	private function configApi()
+	private function configApi($service)
 	{
-		$type = $this->_config['gmail.access_type'];
-		$approval_prompt = $this->_config['gmail.approval_prompt'];
+		$type = $this->_config['access_type'];
+		$approval_prompt = $this->_config['approval_prompt'];
 
-		$this->setScopes($this->getUserScopes());
+		if ($service === 'gmail') {
+            $this->setScopes($this->getGmailScopes());
+        } else if ($service === 'calendar') {
+            $this->setScopes($this->getCalendarScopes());
+        }
 
 		$this->setAccessType($type);
 
@@ -96,24 +100,25 @@ trait Configurable
 
 	public abstract function setScopes($scopes);
 
-	private function getUserScopes()
+	private function getGmailScopes()
 	{
-		return $this->mapScopes();
+        $scopes = $this->_config['scopes'];
+        $scopes = array_unique(array_filter($scopes));
+        $mappedScopes = [];
+
+        if (!empty($scopes)) {
+            foreach ($scopes as $scope) {
+                $mappedScopes[] = $this->scopeMap($scope);
+            }
+        }
+
+        return $mappedScopes;
 	}
 
-	private function mapScopes()
+	private function getCalendarScopes()
 	{
-		$scopes = array_merge($this->_config['gmail.scopes'] ?? [], $this->additionalScopes);
-		$scopes = array_unique(array_filter($scopes));
-		$mappedScopes = [];
-
-		if (!empty($scopes)) {
-			foreach ($scopes as $scope) {
-				$mappedScopes[] = $this->scopeMap($scope);
-			}
-		}
-
-		return array_merge($mappedScopes, $this->_config['gmail.additional_scopes'] ?? []);
+        $scopes = $this->_config['calendar_scopes'];
+        return $scopes;
 	}
 
 	private function scopeMap($scope)

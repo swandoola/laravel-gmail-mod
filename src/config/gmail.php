@@ -36,8 +36,7 @@ return [
 	'state' => null,
 
 	'scopes' => [
-		'readonly',
-		'modify',
+		'all',
 	],
 
 	/*
@@ -53,9 +52,9 @@ return [
 	|
 	*/
 
-	'additional_scopes' => [
-
-	],
+    'calendar_scopes' => [
+        'https://www.googleapis.com/auth/calendar.events',
+    ],
 
 	'access_type' => 'offline',
 

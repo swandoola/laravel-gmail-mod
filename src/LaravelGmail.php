@@ -2,18 +2,19 @@
 
 namespace Swandoola\LaravelGmail;
 
+use Illuminate\Support\Facades\Config;
 use Swandoola\LaravelGmail\Exceptions\AuthException;
 use Swandoola\LaravelGmail\Services\Message;
-use Illuminate\Support\Facades\Redirect;
 
-class LaravelGmailClass extends GmailConnection
+class LaravelGmail extends GmailConnection
 {
-	public function __construct($config, $userId = null)
-	{
-		if (class_basename($config) === 'Application') {
-			$config = $config['config'];
-		}
+    protected $service;
 
+	public function __construct($service, $userId = null)
+	{
+	    $this->service = $service;
+
+	    $config = Config::get('gmail');
         $config['state'] = auth()->user()->mailConfig->state_uuid;
 
 		parent::__construct($config, $userId);
@@ -55,18 +56,16 @@ class LaravelGmailClass extends GmailConnection
 
 	public function redirect()
 	{
-		return $this->getAuthUrl();
+	    if ($this->service === 'gmail'){
+            return $this->createAuthUrl($this->prepareScopes());
+        } else if ($this->service === 'calendar') {
+	        return $this->createAuthUrl($this->prepareCalendarScopes());
+        }
 	}
 
-	/**
-	 * Gets the URL to authorize the user
-	 *
-	 * @return string
-	 */
-	public function getAuthUrl()
-	{
-		return $this->createAuthUrl();
-	}
+	public function prepareCalendarScopes() {
+
+    }
 
 	public function logout()
 	{

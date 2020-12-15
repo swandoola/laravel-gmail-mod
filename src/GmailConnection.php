@@ -17,6 +17,7 @@ class GmailConnection extends Google_Client
 		__construct as configConstruct;
 	}
 
+	protected $service;
 	protected $emailAddress;
 	protected $refreshToken;
 	protected $app;
@@ -37,7 +38,7 @@ class GmailConnection extends Google_Client
 
 		parent::__construct($this->getConfigs());
 
-		$this->configApi();
+		$this->configApi($this->service);
 
 		if ($this->checkPreviouslyLoggedIn()) {
 			$this->refreshTokenIfNeeded();
@@ -54,7 +55,7 @@ class GmailConnection extends Google_Client
 	{
         $credentials = $this->getClientGmailCredentials();
 
-        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $allowJsonEncrypt = $this->_config['allow_json_encrypt'];
 
         if ($credentials) {
             if ($allowJsonEncrypt) {
@@ -155,7 +156,7 @@ class GmailConnection extends Google_Client
             $credentials->type = 'google';
             $credentials->status = 'active';
         }
-        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $allowJsonEncrypt = $this->_config['allow_json_encrypt'];
 
         $config['email'] = $this->emailAddress;
 
@@ -250,19 +251,12 @@ class GmailConnection extends Google_Client
     {
         $credentials = $this->getClientGmailCredentials();
 
-        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $allowJsonEncrypt = $this->_config['allow_json_encrypt'];
 
         if ($credentials) {
             $credentials->config = null;
             $credentials->save();
         }
     }
-
-	private function haveReadScope()
-	{
-		$scopes = $this->getUserScopes();
-
-		return in_array(Google_Service_Gmail::GMAIL_READONLY, $scopes);
-	}
 
 }

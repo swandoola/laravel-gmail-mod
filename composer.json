@@ -41,16 +41,6 @@
       "Tests\\": "tests/"
     }
   },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Swandoola\\LaravelGmail\\LaravelGmailServiceProvider"
-      ],
-      "aliases": {
-        "LaravelGmail": "Swandoola\\LaravelGmail\\Facade\\LaravelGmail"
-      }
-    }
-  },
   "config": {
     "preferred-install": "dist",
     "sort-packages": true,

@@ -2,7 +2,7 @@
 
 namespace Swandoola\LaravelGmail\Services;
 
-use Swandoola\LaravelGmail\LaravelGmailClass;
+use Swandoola\LaravelGmail\LaravelGmail;
 use Swandoola\LaravelGmail\Services\Message\Mail;
 use Swandoola\LaravelGmail\Traits\Filterable;
 use Swandoola\LaravelGmail\Traits\SendsParameters;
@@ -32,9 +32,9 @@ class Message
 	/**
 	 * Message constructor.
 	 *
-	 * @param  LaravelGmailClass  $client
+	 * @param  LaravelGmail  $client
 	 */
-	public function __construct(LaravelGmailClass $client)
+	public function __construct(LaravelGmail $client)
 	{
 		$this->client = $client;
 		$this->service = new Google_Service_Gmail($client);
