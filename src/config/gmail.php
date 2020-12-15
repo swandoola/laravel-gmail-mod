@@ -53,7 +53,7 @@ return [
 	*/
 
     'calendar_scopes' => [
-        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/calendar.events email',
     ],
 
 	'access_type' => 'offline',
