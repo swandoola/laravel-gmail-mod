@@ -209,6 +209,10 @@ class GmailConnection extends Google_Client
                         $this->emailAddress = $me->emailAddress;
                         $accessToken['email'] = $me->emailAddress;
                     }
+                } else if ($this->service === 'calendar') {
+                    $service = new \Google_Service_Oauth2($this);
+                    $this->emailAddress = $service->userinfo->get()['email'];
+                    $accessToken['email'] = $service->userinfo->get()['email'];
                 }
 
                 $this->setBothAccessToken($accessToken);
