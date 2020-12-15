@@ -1,6 +1,6 @@
 {
-  "name": "dacastro4/laravel-gmail",
-  "description": "Gmail API package for Laravel",
+  "name": "swandoola/laravel-gmail",
+  "description": "Gmail API package for Laravel based on dacastro4/laravel-gmail",
   "keywords": [
     "api",
     "laravel",
@@ -9,9 +9,9 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Daniel Castro",
-      "email": "danielcastro04@gmail.com",
-      "homepage": "https://danielcastro.me"
+      "name": "Alex & Georgi",
+      "email": "tech@swandoola.com",
+      "homepage": "https://swandoola.com"
     }
   ],
   "require": {
@@ -33,7 +33,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Dacastro4\\LaravelGmail\\": "src/"
+      "Swandoola\\LaravelGmail\\": "src/"
     }
   },
   "autoload-dev": {
@@ -44,10 +44,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Dacastro4\\LaravelGmail\\LaravelGmailServiceProvider"
+        "Swandoola\\LaravelGmail\\LaravelGmailServiceProvider"
       ],
       "aliases": {
-        "LaravelGmail": "Dacastro4\\LaravelGmail\\Facade\\LaravelGmail"
+        "LaravelGmail": "Swandoola\\LaravelGmail\\Facade\\LaravelGmail"
       }
     }
   },
