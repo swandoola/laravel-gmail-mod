@@ -51,13 +51,19 @@ trait Configurable
     {
         $userId = auth()->id();
 
-        $mailConfig = \App\Models\MailConfig::where('practitioner_id', $userId)->where('type', 'google')->first();
+
+        $config = null;
+        if ($this->service === 'gmail') {
+            $config = \App\Models\MailConfig::where('practitioner_id', $userId)->where('type', 'google')->first();
+        } else if ($this->service === 'calendar') {
+            $config = \App\Models\CalendarIntegrationConfig::where('practitioner_id', $userId)->where('type', 'google')->first();
+        }
 
         $allowMultipleCredentials = $this->_config['allow_multiple_credentials'];
 
-        if ($mailConfig && $allowMultipleCredentials) {
+        if ($config && $allowMultipleCredentials) {
 
-            return $mailConfig;
+            return $config;
         }
         return false;
     }

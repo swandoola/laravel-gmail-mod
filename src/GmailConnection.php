@@ -3,6 +3,7 @@
 namespace Swandoola\LaravelGmail;
 
 use App\Models\MailConfig;
+use App\Models\CalendarIntegrationConfig;
 use Swandoola\LaravelGmail\Traits\Configurable;
 use Google_Client;
 use Google_Service_Gmail;
@@ -151,7 +152,11 @@ class GmailConnection extends Google_Client
         $credentials = $this->getClientGmailCredentials();
 
         if (!$credentials){
-            $credentials = new MailConfig();
+            if ($this->service === 'gmail') {
+                $credentials = new MailConfig();
+            } else if ($this->service === 'calendar'){
+                $credentials = new CalendarIntegrationConfig();
+            }
             $credentials->practitioner_id = auth()->user()->id;
             $credentials->type = 'google';
             $credentials->status = 'active';
@@ -197,15 +202,18 @@ class GmailConnection extends Google_Client
 			$request = Request::capture();
 			$code = (string) $request->input('code', null);
 			if (!is_null($code) && !empty($code)) {
-            $accessToken = $this->fetchAccessTokenWithAuthCode($code);
-                $me = $this->getProfile();
-                if (property_exists($me, 'emailAddress')) {
-                    $this->emailAddress = $me->emailAddress;
-                    $accessToken['email'] = $me->emailAddress;
+                $accessToken = $this->fetchAccessTokenWithAuthCode($code);
+                if ($this->service === 'gmail'){
+                    $me = $this->getProfile();
+                    if (property_exists($me, 'emailAddress')) {
+                        $this->emailAddress = $me->emailAddress;
+                        $accessToken['email'] = $me->emailAddress;
+                    }
                 }
-				$this->setBothAccessToken($accessToken);
 
-				return $accessToken;
+                $this->setBothAccessToken($accessToken);
+
+                return $accessToken;
 			} else {
 				throw new \Exception('No access token');
 			}

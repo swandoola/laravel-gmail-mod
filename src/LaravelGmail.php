@@ -15,7 +15,15 @@ class LaravelGmail extends GmailConnection
 	    $this->service = $service;
 
 	    $config = Config::get('gmail');
-        $config['state'] = auth()->user()->mailConfig->state_uuid;
+
+	    if ($this->service === 'gmail'){
+	        $config['redirect_url'] = env('GOOGLE_REDIRECT_URI');
+            $config['state'] = auth()->user()->mailConfig->state_uuid;
+        } else if ($this->service === 'calendar'){
+            $config['redirect_url'] = env('GOOGLE_CALENDAR_REDIRECT_URI');
+            $config['state'] = auth()->user()->calendarIntegrationConfig->state_uuid;
+        }
+
 
 		parent::__construct($config, $userId);
 	}
