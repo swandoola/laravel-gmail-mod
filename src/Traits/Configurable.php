@@ -21,50 +21,46 @@ trait Configurable
 		$this->_config = $config;
 	}
 
-	public function config($string = null)
-	{
-		$disk = Storage::disk('local');
-		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
-		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+    public function config($string = null)
+    {
+        $credentials = $this->getClientGmailCredentials();
 
-		if ($disk->exists($file)) {
-			if ($allowJsonEncrypt) {
-				$config = json_decode(decrypt($disk->get($file)), true);
-			} else {
-				$config = json_decode($disk->get($file), true);
-			}
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 
-			if ($string) {
-				if (isset($config[$string])) {
-					return $config[$string];
-				}
-			} else {
-				return $config;
-			}
+        if ($credentials) {
+            if ($allowJsonEncrypt) {
+                $config = json_decode(decrypt($credentials->config), true);
+            } else {
+                $config = json_decode($credentials->config, true);
+            }
 
-		}
+            if ($string) {
+                if (isset($config[$string])) {
+                    return $config[$string];
+                }
+            } else {
+                return $config;
+            }
 
-		return null;
-	}
+        }
 
-	private function getFileName()
-	{
-		if (property_exists(get_class($this), 'userId') && $this->userId) {
-			$userId = $this->userId;
-		} elseif (auth()->user()) {
-			$userId = auth()->user()->id;
-		}
+        return null;
+    }
 
-		$credentialFilename = $this->_config['gmail.credentials_file_name'];
-		$allowMultipleCredentials = $this->_config['gmail.allow_multiple_credentials'];
+    private function getClientGmailCredentials()
+    {
+        $userId = auth()->id();
 
-		if (isset($userId) && $allowMultipleCredentials) {
-			return sprintf('%s-%s', $credentialFilename, $userId);
-		}
+        $mailConfig = \App\Models\MailConfig::where('practitioner_id', $userId)->where('type', 'google')->first();
 
-		return $credentialFilename;
-	}
+        $allowMultipleCredentials = $this->_config['gmail.allow_multiple_credentials'];
+
+        if ($mailConfig && $allowMultipleCredentials) {
+
+            return $mailConfig;
+        }
+        return false;
+    }
 
 	/**
 	 * @return array
@@ -75,7 +71,7 @@ trait Configurable
 			'client_secret' => $this->_config['gmail.client_secret'],
 			'client_id' => $this->_config['gmail.client_id'],
 			'redirect_uri' => url($this->_config['gmail.redirect_url']),
-			'state' => isset($this->_config['gmail.state']) ? $this->_config['gmail.state'] : null,
+			'state' => isset($this->_config['state']) ? $this->_config['state'] : null,
 		];
 	}
 

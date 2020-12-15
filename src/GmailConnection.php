@@ -52,22 +52,22 @@ class GmailConnection extends Google_Client
 	 */
 	public function checkPreviouslyLoggedIn()
 	{
-		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
-		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $credentials = $this->getClientGmailCredentials();
 
-		if (Storage::disk('local')->exists($file)) {
-			if ($allowJsonEncrypt) {
-				$savedConfigToken = json_decode(decrypt(Storage::disk('local')->get($file)), true);
-			} else {
-				$savedConfigToken = json_decode(Storage::disk('local')->get($file), true);
-			}
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 
-			return !empty($savedConfigToken['access_token']);
+        if ($credentials) {
+            if ($allowJsonEncrypt) {
+                $savedConfigToken = json_decode(decrypt($credentials->config), true);
+            } else {
+                $savedConfigToken = json_decode($credentials->config, true);
+            }
 
-		}
+            return !empty($savedConfigToken['access_token']);
 
-		return false;
+        }
+
+        return false;
 	}
 
 	/**
@@ -145,37 +145,46 @@ class GmailConnection extends Google_Client
 	 *
 	 * @param  array  $config
 	 */
-	public function saveAccessToken(array $config)
-	{
-		$disk = Storage::disk('local');
-		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
-		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-		$config['email'] = $this->emailAddress;
+    public function saveAccessToken(array $config)
+    {
+        $credentials = $this->getClientGmailCredentials();
 
-		if ($disk->exists($file)) {
+        if (!$credentials){
+            $credentials = new MailConfig();
+            $credentials->practitioner_id = auth()->user()->id;
+            $credentials->type = 'google';
+            $credentials->status = 'active';
+        }
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 
-			if (empty($config['email'])) {
-				if ($allowJsonEncrypt) {
-					$savedConfigToken = json_decode(decrypt($disk->get($file)), true);
-				} else {
-					$savedConfigToken = json_decode($disk->get($file), true);
-				}
-				if(isset( $savedConfigToken['email'])) {
-					$config['email'] = $savedConfigToken['email'];
-				}
-			}
+        $config['email'] = $this->emailAddress;
 
-			$disk->delete($file);
-		}
+        if ($credentials) {
 
-		if ($allowJsonEncrypt) {
-			$disk->put($file, encrypt(json_encode($config)));
-		} else {
-			$disk->put($file, json_encode($config));
-		}
+            if (empty($config['email'])) {
+                if ($allowJsonEncrypt) {
+                    $savedConfigToken = json_decode(decrypt($credentials->config), true);
+                } else {
+                    $savedConfigToken = json_decode($credentials->config, true);
+                }
+                if (isset($savedConfigToken['email'])) {
+                    $config['email'] = $savedConfigToken['email'];
+                }
+            }
 
-	}
+            $credentials->config = null;
+            $credentials->save();
+        }
+
+        if ($allowJsonEncrypt) {
+            $credentials->config = encrypt(json_encode($config));
+            $credentials->save();
+        } else {
+            $credentials->config = json_encode($config);
+            $credentials->save();
+        }
+
+    }
 
 	/**
 	 * @return array|string
@@ -236,28 +245,20 @@ class GmailConnection extends Google_Client
 		$this->revokeToken();
 	}
 
-	/**
-	 * Delete the credentials in a file
-	 */
-	public function deleteAccessToken()
-	{
-		$disk = Storage::disk('local');
-		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
+    /**
+     * Delete the credentials in a file
+     */
+    public function deleteAccessToken()
+    {
+        $credentials = $this->getClientGmailCredentials();
 
-		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 
-		if ($disk->exists($file)) {
-			$disk->delete($file);
-		}
-
-		if ($allowJsonEncrypt) {
-			$disk->put($file, encrypt(json_encode([])));
-		} else {
-			$disk->put($file, json_encode([]));
-		}
-
-	}
+        if ($credentials) {
+            $credentials->config = null;
+            $credentials->save();
+        }
+    }
 
 	private function haveReadScope()
 	{

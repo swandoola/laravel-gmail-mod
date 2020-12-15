@@ -14,6 +14,8 @@ class LaravelGmailClass extends GmailConnection
 			$config = $config['config'];
 		}
 
+        $config['state'] = auth()->user()->mailConfig->state_uuid;
+
 		parent::__construct($config, $userId);
 	}
 
@@ -53,7 +55,7 @@ class LaravelGmailClass extends GmailConnection
 
 	public function redirect()
 	{
-		return Redirect::to($this->getAuthUrl());
+		return $this->getAuthUrl();
 	}
 
 	/**
