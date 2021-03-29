@@ -10,7 +10,7 @@ class LaravelGmail extends GmailConnection
 {
     protected $service;
 
-	public function __construct($service, $userId = null)
+	public function __construct($service, $integrationConfig)
 	{
 	    $this->service = $service;
 
@@ -18,14 +18,13 @@ class LaravelGmail extends GmailConnection
 
 	    if ($this->service === 'gmail'){
 	        $config['redirect_url'] = env('GOOGLE_REDIRECT_URI');
-            $config['state'] = auth()->user()->mailConfig->state_uuid;
         } else if ($this->service === 'calendar'){
             $config['redirect_url'] = env('GOOGLE_CALENDAR_REDIRECT_URI');
-            $config['state'] = auth()->user()->calendarIntegrationConfig->state_uuid;
         }
 
+        $config['state'] = $integrationConfig->state_uuid;
 
-		parent::__construct($config, $userId);
+		parent::__construct($config, $integrationConfig);
 	}
 
 	/**

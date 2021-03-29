@@ -15,10 +15,12 @@ trait Configurable
 
 	protected $additionalScopes = [];
 	private $_config;
+	private $_integrationConfig;
 
-	public function __construct($config)
+	public function __construct($config, $integrationConfig)
 	{
 		$this->_config = $config;
+		$this->_integrationConfig = $integrationConfig;
 	}
 
     public function config($string = null)
@@ -49,21 +51,11 @@ trait Configurable
 
     private function getClientGmailCredentials()
     {
-        $userId = auth()->id();
-
-
-        $config = null;
-        if ($this->service === 'gmail') {
-            $config = \App\Models\MailConfig::where('practitioner_id', $userId)->where('type', 'google')->first();
-        } else if ($this->service === 'calendar') {
-            $config = \App\Models\CalendarIntegrationConfig::where('practitioner_id', $userId)->where('type', 'google')->first();
-        }
-
         $allowMultipleCredentials = $this->_config['allow_multiple_credentials'];
 
-        if ($config && $allowMultipleCredentials) {
+        if ($allowMultipleCredentials) {
 
-            return $config;
+            return $this->_integrationConfig;
         }
         return false;
     }

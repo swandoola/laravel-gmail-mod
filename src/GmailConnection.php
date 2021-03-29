@@ -2,8 +2,6 @@
 
 namespace Swandoola\LaravelGmail;
 
-use App\Models\MailConfig;
-use App\Models\CalendarIntegrationConfig;
 use Swandoola\LaravelGmail\Traits\Configurable;
 use Google_Client;
 use Google_Service_Gmail;
@@ -27,13 +25,11 @@ class GmailConnection extends Google_Client
 	private $configuration;
 	public $userId;
 
-	public function __construct($config = null, $userId = null)
+	public function __construct($config = null, $integrationConfig)
 	{
 		$this->app = Container::getInstance();
 
-		$this->userId = $userId;
-
-		$this->configConstruct($config);
+		$this->configConstruct($config, $integrationConfig);
 
 		$this->configuration = $config;
 
@@ -151,21 +147,10 @@ class GmailConnection extends Google_Client
     {
         $credentials = $this->getClientGmailCredentials();
 
-        if (!$credentials){
-            if ($this->service === 'gmail') {
-                $credentials = new MailConfig();
-            } else if ($this->service === 'calendar'){
-                $credentials = new CalendarIntegrationConfig();
-            }
-            $credentials->practitioner_id = auth()->user()->id;
-            $credentials->type = 'google';
-            $credentials->status = 'active';
-        }
-        $allowJsonEncrypt = $this->_config['allow_json_encrypt'];
-
-        $config['email'] = $this->emailAddress;
-
         if ($credentials) {
+            $allowJsonEncrypt = $this->_config['allow_json_encrypt'];
+
+            $config['email'] = $this->emailAddress;
 
             if (empty($config['email'])) {
                 if ($allowJsonEncrypt) {
@@ -180,14 +165,14 @@ class GmailConnection extends Google_Client
 
             $credentials->config = null;
             $credentials->save();
-        }
 
-        if ($allowJsonEncrypt) {
-            $credentials->config = encrypt(json_encode($config));
-            $credentials->save();
-        } else {
-            $credentials->config = json_encode($config);
-            $credentials->save();
+            if ($allowJsonEncrypt) {
+                $credentials->config = encrypt(json_encode($config));
+                $credentials->save();
+            } else {
+                $credentials->config = json_encode($config);
+                $credentials->save();
+            }
         }
 
     }
